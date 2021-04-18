@@ -3,6 +3,7 @@ from commons import skills
 from commons.targeting import TargetingConfig
 from datetime import datetime
 import time, json
+import math
 
 lview_script_info = {
 	"script": "Zou_Kan",
@@ -115,6 +116,10 @@ def get_target(game):
 	global auto_last_hit
 	global target
 
+	target_around_mouse = get_nearest_champ_near_mouse(game, 200)
+	if target_around_mouse:
+		return target_around_mouse
+
 	atk_range = game.player.base_atk_range + game.player.gameplay_radius
 
 	if target is not None and (not target.is_visible or not target.is_alive or (skills.soldier_near_obj(game, target) is None and game.distance(game.player, target) > atk_range)):
@@ -122,18 +127,31 @@ def get_target(game):
 		target = None 
 		
 	if target is None:
-		target = targeting.get_target(game, atk_range)
+		target = targeting.get_target(game, 1000)
 
-	if not target and auto_last_hit:
-		soldier = skills.is_soldier_alive(game)
+	# if not target and auto_last_hit:
+	# 	soldier = skills.is_soldier_alive(game)
 
-		#only need to know if > 0 soldiers are up
-		if soldier is not None:
-			target = find_soldier_minion_target(game)
+	# 	#only need to know if > 0 soldiers are up
+	# 	if soldier is not None:
+	# 		target = find_soldier_minion_target(game)
 	
-		if not target:
-			target = find_minion_target(game)
+	# 	if not target:
+	# 		target = find_minion_target(game)
 	
+	return target
+
+def get_nearest_champ_near_mouse(game, search_range):
+	old_mouse_pos = game.get_cursor()
+	min_dist = search_range
+	target = None
+	champions = game.champs
+	for champ in champions:
+		screen_pos = game.world_to_screen(champ.pos)
+		dist_to_mouse = math.sqrt( ((old_mouse_pos.x - screen_pos.x)**2) + ((old_mouse_pos.y - screen_pos.y)**2)) #calc_dist(old_mouse_pos, champ.pos)
+		if champ.is_enemy_to(game.player) and champ.is_alive and dist_to_mouse < search_range and dist_to_mouse < min_dist:
+			target = champ
+			min_dist = dist_to_mouse
 	return target
 
 def draw_rect(game, start_pos, end_pos, radius, color):
@@ -251,14 +269,14 @@ def lview_update(game, ui):
 	# if target:
 	if t - last_attacked > max(c_atk_time, max_atk_time) and target:
 		last_attacked = t
-		game.press_key(key_attack_move)
-		game.click_at(True, game.world_to_screen(target.pos))
-		
-		# old_cpos = game.get_cursor()
-		# game.move_cursor(game.world_to_screen(target.pos))
 		# game.press_key(key_attack_move)
 		# game.click_at(True, game.world_to_screen(target.pos))
-		# game.move_cursor(old_cpos)
+		
+		old_cpos = game.get_cursor()
+		# game.move_cursor(game.world_to_screen(target.pos))
+		game.press_key(key_attack_move)
+		game.click_at(True, game.world_to_screen(target.pos))
+		game.move_cursor(old_cpos)
 		# game.press_right_click()
 		# pass
 
