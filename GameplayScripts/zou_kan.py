@@ -116,15 +116,17 @@ def get_target(game):
 	global auto_last_hit
 	global target
 
+	target = None 
+
 	target_around_mouse = get_nearest_champ_near_mouse(game, 200)
 	if target_around_mouse:
 		return target_around_mouse
 
 	atk_range = game.player.base_atk_range + game.player.gameplay_radius
 
-	if target is not None and (not target.is_visible or not target.is_alive or (skills.soldier_near_obj(game, target) is None and game.distance(game.player, target) > atk_range)):
-		#game.draw_circle_world(game.player.pos, 24.0, 16, 3, Color.BLACK)
-		target = None 
+	# if target is not None and (not target.is_visible or not target.is_alive or (skills.soldier_near_obj(game, target) is None and game.distance(game.player, target) > atk_range)):
+	# 	#game.draw_circle_world(game.player.pos, 24.0, 16, 3, Color.BLACK)
+	# 	target = None 
 		
 	if target is None:
 		target = targeting.get_target(game, 1000)
@@ -234,55 +236,27 @@ def lview_update(game, ui):
 	c_atk_time = (1.0/atk_speed)
 	max_atk_time = 1.0/max_atk_speed
 
-	if target is not None:
-		game.draw_circle_world(target.pos, 24.0, 16, 3, Color.WHITE)
-
-		# if game.player.name == "azir" and game.player.W.level > 0:
-		# 	#Check if azir arise buff is active (it's named azirwprocbuff)
-		# 	azir_w_atk_speeds = {
-		# 		1:20,
-		# 		2:30,
-		# 		3:40,
-		# 		4:50,
-		# 		5:60
-		# 	}
-		# 	azir_w_atk_speed_multiplier = azir_w_atk_speeds[game.player.W.level]
-
-		# 	w_time = time.time()
-		# 	for buff in game.player.buffs:
-		# 		if buff.name == "azirwprocbuff":
-		# 			if time.time() < buff.end_time:
-		# 				#our attack speed buff is active
-		# 				#need to check spell level of w and get the attack speed multiplier
-		# 				atk_speed = (self.base_atk_speed)
-
-
-		# soldier = soldier_near_obj(game, target)
-		# if soldier is not None:
-
-		# 	num_soldiers = count_soldiers_near_obj(game, target)
-		# 	if num_soldiers == 3:
-
 
 	target = get_target(game)
 	t = time.time()
+
+	# if target is not None:
+	# 	game.draw_circle_world(target.pos, 24.0, 16, 3, Color.WHITE)
+
+
 	# if target:
-	if t - last_attacked > max(c_atk_time, max_atk_time) and target:
-		last_attacked = t
-		# game.press_key(key_attack_move)
-		# game.click_at(True, game.world_to_screen(target.pos))
-		
-		old_cpos = game.get_cursor()
-		# game.move_cursor(game.world_to_screen(target.pos))
+	if target and t - last_attacked > max(c_atk_time, max_atk_time):
+		last_attacked = t		
+		# old_cpos = game.get_cursor()
 		game.press_key(key_attack_move)
 		game.click_at(True, game.world_to_screen(target.pos))
-		game.move_cursor(old_cpos)
-		# game.press_right_click()
-		# pass
+		# game.move_cursor(old_cpos)
 
 	else:
+		hovered_obj = game.hovered_obj
 		dt = t - last_attacked
-		if dt > b_windup_time and t - last_moved > 0.15:
-			last_moved = t
-			game.press_right_click()
+		if hovered_obj not in game.minions:
+			if dt > b_windup_time and t - last_moved > 0.15:
+				last_moved = t
+				game.press_right_click()
 			
