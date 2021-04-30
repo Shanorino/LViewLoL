@@ -7,7 +7,7 @@ import math
 
 lview_script_info = {
 	"script": "Zou_Kan",
-	"author": "leryss",
+	"author": "laiwuzi",
 	"description": "Automatically kites enemies. Also has last hit built in"
 }
 
@@ -118,18 +118,18 @@ def get_target(game):
 
 	target = None 
 
-	target_around_mouse = get_nearest_champ_near_mouse(game, 200)
+	target_around_mouse = get_nearest_champ_near_mouse(game, 900)
 	if target_around_mouse:
 		return target_around_mouse
 
-	atk_range = game.player.base_atk_range + game.player.gameplay_radius
+	# atk_range = game.player.base_atk_range + game.player.gameplay_radius
 
 	# if target is not None and (not target.is_visible or not target.is_alive or (skills.soldier_near_obj(game, target) is None and game.distance(game.player, target) > atk_range)):
 	# 	#game.draw_circle_world(game.player.pos, 24.0, 16, 3, Color.BLACK)
 	# 	target = None 
 		
-	if target is None:
-		target = targeting.get_target(game, 1000)
+	# if target is None:
+	# 	target = targeting.get_target(game, 600)
 
 	# if not target and auto_last_hit:
 	# 	soldier = skills.is_soldier_alive(game)
@@ -154,6 +154,15 @@ def get_nearest_champ_near_mouse(game, search_range):
 		if champ.is_enemy_to(game.player) and champ.is_alive and dist_to_mouse < search_range and dist_to_mouse < min_dist:
 			target = champ
 			min_dist = dist_to_mouse
+
+	if target == None:
+		for jungle in game.jungle:
+			screen_pos = game.world_to_screen(jungle.pos)
+			dist_to_mouse = math.sqrt( ((old_mouse_pos.x - screen_pos.x)**2) + ((old_mouse_pos.y - screen_pos.y)**2)) #calc_dist(old_mouse_pos, minion.pos)
+			if jungle.is_alive and dist_to_mouse < search_range and dist_to_mouse < min_dist:
+				target = jungle
+				min_dist = dist_to_mouse
+
 	return target
 
 def draw_rect(game, start_pos, end_pos, radius, color):
@@ -236,7 +245,6 @@ def lview_update(game, ui):
 	c_atk_time = (1.0/atk_speed)
 	max_atk_time = 1.0/max_atk_speed
 
-
 	target = get_target(game)
 	t = time.time()
 
@@ -245,11 +253,12 @@ def lview_update(game, ui):
 
 
 	# if target:
-	if target and t - last_attacked > max(c_atk_time, max_atk_time):
+	if target and target not in game.minions and t - last_attacked > max(c_atk_time, max_atk_time):
 		last_attacked = t		
 		# old_cpos = game.get_cursor()
 		game.press_key(key_attack_move)
 		game.click_at(True, game.world_to_screen(target.pos))
+		time.sleep(0.02)
 		# game.move_cursor(old_cpos)
 
 	else:
