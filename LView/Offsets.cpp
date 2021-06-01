@@ -22,7 +22,7 @@ int Offsets::ObjBaseAtk = 0x12A0; //		11.9 ==> 11.10
 int Offsets::ObjBonusAtk = 0x1218; //		UNCHANGED
 int Offsets::ObjMoveSpeed = 0x12E0; //		11.9 ==> 11.10
 int Offsets::ObjSpellBook = 0x2880; //		11.9 ==> 11.10 0x2408
-int Offsets::ObjName = 0x2C74; //		11.10: 0x2E3C
+int Offsets::ObjName = 0x2C74; //		11.10: 0x2E3C 0x2C74
 int Offsets::ObjLvl = 0x33E0; //		11.9 ==> 11.10
 int Offsets::ObjExpiry = 0x298; //			UNCHANGED
 int Offsets::ObjCrit = 0x12C4; //		11.9 ==> 11.10
@@ -52,8 +52,8 @@ int Offsets::SpellDataMissileName = 0x6C; //			11.9 ==> 11.10
 //int Offsets::SpellSlotSmiteCharges = 0x58; //			UNCHANGED
 
 int Offsets::ObjectManager = 0x0170bbb8; //		11.9 ==> 11.10
-int Offsets::LocalPlayer = 0x02fa7fe0; //		11.9 ==> 11.10
-int Offsets::UnderMouseObject = 0x02fa89f8; //		11.9 ==> 11.10 11.11: 0x2fb6218
+int Offsets::LocalPlayer = 0x2FA7FE0; //		11.9 ==> 11.10
+int Offsets::UnderMouseObject = 0x2F9C930; //		11.9 ==> 11.10 11.11: 0x2fb6218 0x2FA89F8 0x2F9C930
 int Offsets::ObjectMapCount = 0x2C; //			UNCHANGED
 int Offsets::ObjectMapRoot = 0x28; //			UNCHANGED
 int Offsets::ObjectMapNodeNetId = 0x10; //			UNCHANGED
